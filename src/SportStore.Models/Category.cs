@@ -16,7 +16,7 @@ namespace SportStore.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage ="Tên loại sản phẩm không được bỏ trống!")]
-        [MaxLength(30, ErrorMessage = "Tên loại sản phẩm quá dài!")]
+        [MaxLength(50, ErrorMessage = "Tên danh mục không được quá 50 ký tự!")]
         [DisplayName("Tên danh mục")]
         public required string Name { get; set; }
 
