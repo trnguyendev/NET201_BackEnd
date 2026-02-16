@@ -1,4 +1,6 @@
-﻿namespace SportStore.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SportStore.Domain.Entities
 {
     public class ProductSize
     {
