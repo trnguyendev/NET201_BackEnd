@@ -1,9 +1,9 @@
 ﻿namespace SportStore.Domain.Entities
 {
-    public class Category
+    public class Brand
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public int DisplayOrder { get; set; }
+        public string? LogoUrl { get; set; }
     }
 }

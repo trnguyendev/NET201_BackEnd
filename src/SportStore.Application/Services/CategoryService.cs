@@ -13,7 +13,7 @@ namespace SportStore.Application.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<IEnumerable<CategoryDto>> GetAllCategoryAsync()
+        public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync()
         {
             var categories = await _unitOfWork.Categories.GetAllAsync();
             //Map thủ công

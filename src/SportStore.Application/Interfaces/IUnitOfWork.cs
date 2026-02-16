@@ -6,6 +6,7 @@ namespace SportStore.Application.Interfaces
     {
         IProductRepository Products { get; }
         IGenericRepository<Category> Categories { get; }
+        IGenericRepository<Brand> Brands { get; }
         Task<int> CompleteAsync(); //Hàm gọi SaveChanges
     }
 }

@@ -33,6 +33,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 // 3. Đăng ký Service
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IBrandService, BrandService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
