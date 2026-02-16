@@ -20,7 +20,7 @@ namespace SportStore.Application.Services
             {
                 Id = p.Id,
                 Name = p.Name,
-                Price = p.Price
+                Price = p.BasePrice
             });
         }
 
@@ -29,7 +29,7 @@ namespace SportStore.Application.Services
             var product = await _unitOfWork.Products.GetByIdAsync(id);
             if (product == null) return null;
 
-            return new ProductDto { Id = product.Id, Name = product.Name, Price = product.Price };
+            return new ProductDto { Id = product.Id, Name = product.Name, Price = product.BasePrice };
         }
 
         public async Task<ProductDto> CreateProductAsync(CreateProductRequest request)
@@ -40,7 +40,7 @@ namespace SportStore.Application.Services
             var product = new Product
             {
                 Name = request.Name,
-                Price = request.Price,
+                BasePrice = request.Price,
                 Description = request.Description,
                 CategoryId = request.CategoryId
             };
@@ -48,7 +48,7 @@ namespace SportStore.Application.Services
             await _unitOfWork.Products.AddAsync(product);
             await _unitOfWork.CompleteAsync(); // Lưu xuống DB
 
-            return new ProductDto { Id = product.Id, Name = product.Name, Price = product.Price };
+            return new ProductDto { Id = product.Id, Name = product.Name, Price = product.BasePrice };
         }
 
         public async Task UpdateProductAsync(int id, CreateProductRequest request)
@@ -57,7 +57,7 @@ namespace SportStore.Application.Services
             if (product != null)
             {
                 product.Name = request.Name;
-                product.Price = request.Price;
+                product.BasePrice = request.Price;
                 product.Description = request.Description;
 
                 _unitOfWork.Products.Update(product);

@@ -5,18 +5,24 @@ namespace SportStore.Domain.Entities
 {
     public class Product
     {
-        [Key]
         public int Id { get; set; }
-        
+
         public required string Name { get; set; }
 
         public string? Description { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Price { get; set; }
+        public decimal BasePrice { get; set; }
 
-        //n-1 (Category - Product)
+        public string? Thumbnail { get; set; }
+
+        // --- Khóa ngoại (Foreign Keys) ---
         public int CategoryId { get; set; }
-        public Category Category { get; set; } = null!;
+        [ForeignKey("CategoryId")]
+        public virtual Category? Category { get; set; }
+
+        public int BrandId { get; set; }
+        [ForeignKey("BrandId")]
+        public virtual Brand? Brand { get; set; }
     }
 }
