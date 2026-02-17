@@ -11,7 +11,7 @@ using SportStore.Infrastructure;
 namespace SportStore.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260216030608_createDataBase")]
+    [Migration("20260216133915_createDataBase")]
     partial class createDataBase
     {
         /// <inheritdoc />
@@ -83,6 +83,9 @@ namespace SportStore.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -202,7 +205,7 @@ namespace SportStore.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("SportStore.Domain.Entities.Product", "Product")
-                        .WithMany()
+                        .WithMany("ProductVariants")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -218,6 +221,11 @@ namespace SportStore.Infrastructure.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Size");
+                });
+
+            modelBuilder.Entity("SportStore.Domain.Entities.Product", b =>
+                {
+                    b.Navigation("ProductVariants");
                 });
 #pragma warning restore 612, 618
         }

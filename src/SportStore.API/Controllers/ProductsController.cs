@@ -32,9 +32,17 @@ namespace SportStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProductRequest request)
+        public async Task<IActionResult> Create([FromForm] CreateProductRequest request) // <--- QUAN TRỌNG
         {
+            // Kiểm tra xem dữ liệu có hợp lệ không (Validation)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var createdProduct = await _productService.CreateProductAsync(request);
+
+            // Trả về mã 201 Created kèm Header Location trỏ đến API lấy chi tiết
             return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
         }
 
@@ -50,6 +58,13 @@ namespace SportStore.API.Controllers
         {
             await _productService.DeleteProductAsync(id);
             return NoContent();
+        }
+
+        [HttpGet("home")]
+        public async Task<IActionResult> GetHomeProducts()
+        {
+            var products = await _productService.GetHomeProductsAsync();
+            return Ok(products);
         }
     }
 }

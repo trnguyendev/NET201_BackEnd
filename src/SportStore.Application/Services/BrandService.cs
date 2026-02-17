@@ -16,6 +16,7 @@ namespace SportStore.Application.Services
             var brands = await _unitOfWork.Brands.GetAllAsync();
             return brands.Select(item => new BrandDto
             {
+                Id = item.Id,
                 Name = item.Name,
                 LogoUrl = item.LogoUrl
             });

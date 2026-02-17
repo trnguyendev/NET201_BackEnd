@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SportStore.Domain.Entities
 {
@@ -11,18 +10,28 @@ namespace SportStore.Domain.Entities
 
         public string? Description { get; set; }
 
+        public bool IsActive { get; set; } = true;
+
         [Column(TypeName = "decimal(18,2)")]
         public decimal BasePrice { get; set; }
 
+        // 1. Thumbnail: Lưu đường dẫn ảnh đại diện (Dạng chuỗi là ĐÚNG)
+        // Mục đích: Hiển thị nhanh ở trang danh sách mà không cần join bảng
         public string? Thumbnail { get; set; }
 
-        // --- Khóa ngoại (Foreign Keys) ---
+        // 2. ProductImages: Phải là DANH SÁCH (Quan hệ 1-Nhiều)
+        // SAI: public string? ProductImages { get; set; } 
+        // SỬA THÀNH:
+        public virtual ICollection<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
+
+        // Foreign keys
         public int CategoryId { get; set; }
-        [ForeignKey("CategoryId")]
         public virtual Category? Category { get; set; }
 
         public int BrandId { get; set; }
-        [ForeignKey("BrandId")]
         public virtual Brand? Brand { get; set; }
+
+        // Navigation
+        public virtual ICollection<ProductVariant> ProductVariants { get; set; } = new List<ProductVariant>();
     }
 }

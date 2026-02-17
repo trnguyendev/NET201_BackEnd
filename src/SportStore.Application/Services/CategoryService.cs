@@ -19,6 +19,7 @@ namespace SportStore.Application.Services
             //Map thủ công
             return categories.Select(c => new CategoryDto
             {
+                Id = c.Id,
                 Name = c.Name,
                 DisplayOrder = c.DisplayOrder,
             });
@@ -40,7 +41,7 @@ namespace SportStore.Application.Services
             };
             await _unitOfWork.Categories.AddAsync(category);
             await _unitOfWork.CompleteAsync();
-            return new CategoryDto { Name = request.Name, DisplayOrder = request.DisplayOrder };
+            return new CategoryDto { Id = category.Id, Name = request.Name, DisplayOrder = request.DisplayOrder };
         }
 
         public async Task UpdateCategoryAsync(int id, UpdateCategoryRequest request)

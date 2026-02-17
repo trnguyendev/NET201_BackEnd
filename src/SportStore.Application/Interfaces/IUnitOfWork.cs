@@ -7,6 +7,10 @@ namespace SportStore.Application.Interfaces
         IProductRepository Products { get; }
         IGenericRepository<Category> Categories { get; }
         IGenericRepository<Brand> Brands { get; }
+        IGenericRepository<ProductColor> ProductColors { get; }
+        IGenericRepository<ProductSize> ProductSizes { get; }
+        IGenericRepository<ProductVariant> ProductVariants { get; }
+        IGenericRepository<ProductImage> ProductImages { get; }
         Task<int> CompleteAsync(); //Hàm gọi SaveChanges
     }
 }

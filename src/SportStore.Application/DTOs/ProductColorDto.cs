@@ -19,7 +19,7 @@ namespace SportStore.Application.DTOs
         public string? HexCode { get; set; }
     }
 
-    public class UpdateProductColorReques
+    public class UpdateProductColorRequest
     {
         [Required(ErrorMessage = "Tên màu không được bỏ trống!")]
         [MaxLength(50)]

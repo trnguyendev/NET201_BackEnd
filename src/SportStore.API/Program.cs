@@ -3,6 +3,8 @@ using SportStore.Application.Interfaces;
 using SportStore.Application.Services;
 using SportStore.Infrastructure;
 using SportStore.Infrastructure.Repositories;
+using SportStore.Infrastructure.Services;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,10 +32,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
+
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // 3. Đăng ký Service
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IBrandService, BrandService>();
+builder.Services.AddScoped<IProductSizeService, ProductSizeService>();
+builder.Services.AddScoped<IProductColorService, ProductColorService>();
+builder.Services.AddScoped<IProductVariantService, ProductVariantService>();
+builder.Services.AddScoped<IFileService, LocalFileService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
