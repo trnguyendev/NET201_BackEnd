@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc;
 using SportStore.Application.DTOs;
 using SportStore.Application.Interfaces;
 
@@ -32,22 +31,14 @@ namespace SportStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromForm] CreateProductRequest request) // <--- QUAN TRỌNG
+        public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
         {
-            // Kiểm tra xem dữ liệu có hợp lệ không (Validation)
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var createdProduct = await _productService.CreateProductAsync(request);
-
-            // Trả về mã 201 Created kèm Header Location trỏ đến API lấy chi tiết
-            return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
+            var product = await _productService.CreateProductAsync(request);
+            return Ok(product);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, CreateProductRequest request)
+        public async Task<IActionResult> Update(int id, [FromForm] UpdateProductRequest request)
         {
             await _productService.UpdateProductAsync(id, request);
             return NoContent();
@@ -58,13 +49,6 @@ namespace SportStore.API.Controllers
         {
             await _productService.DeleteProductAsync(id);
             return NoContent();
-        }
-
-        [HttpGet("home")]
-        public async Task<IActionResult> GetHomeProducts()
-        {
-            var products = await _productService.GetHomeProductsAsync();
-            return Ok(products);
         }
     }
 }

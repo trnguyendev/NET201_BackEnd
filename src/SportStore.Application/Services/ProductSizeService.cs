@@ -17,6 +17,7 @@ namespace SportStore.Application.Services
             var productSizes = await _unitOfWork.ProductSizes.GetAllAsync();
             return productSizes.Select(item => new ProductSizeDto
             {
+                Id = item.Id,
                 Name = item.Name,
                 Type = item.Type,
             });

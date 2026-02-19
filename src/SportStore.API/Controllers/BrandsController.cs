@@ -31,7 +31,7 @@ namespace SportStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateBrandRequest request)
+        public async Task<IActionResult> Create([FromForm] CreateBrandRequest request)
         {
             var brand = await _brandService.CreateBrandAsync(request);
             return Ok(brand);

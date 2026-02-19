@@ -3,41 +3,48 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SportStore.Application.DTOs
 {
-    // Dữ liệu trả về cho client
     public class ProductDto
     {
         public int Id { get; set; }
-        public required string Name { get; set; }
-        public decimal Price { get; set; }
-    }
-
-    // Dữ liệu client gửi lên để tạo mới
-    public class CreateProductRequest
-    {
-        [Required(ErrorMessage = "Tên sản phẩm không được bỏ trống!")]
-        [MaxLength(200, ErrorMessage = "Tên sản phẩm không quá 200 ký tự")]
         public string Name { get; set; } = null!;
-
-        [Required(ErrorMessage = "Giá sản phẩm là bắt buộc")]
-        [Range(1000, 100000000, ErrorMessage = "Giá phải nằm trong khoảng 1k đến 100tr")]
-        public decimal Price { get; set; }
-
-        [MaxLength(1000, ErrorMessage = "Mô tả sản phẩm quá dài")]
         public string? Description { get; set; }
-
-        [Required(ErrorMessage = "Vui lòng chọn danh mục sản phẩm!")]
-        [Range(1, int.MaxValue, ErrorMessage = "Danh mục không hợp lệ!")]
+        public bool IsActive { get; set; }
+        public decimal BasePrice { get; set; }
+        public string? Thumbnail { get; set; } // URL ảnh để trả về React
         public int CategoryId { get; set; }
-
-        [Required(ErrorMessage = "Vui lòng chọn thương hiệu!")]
-        [Range(1, int.MaxValue, ErrorMessage = "Thương hiệu không hợp lệ!")]
         public int BrandId { get; set; }
 
-        public string? Thumbnail { get; set; }
+        // Có thể thêm tên Category/Brand để hiển thị ra bảng cho đẹp
+        public string? CategoryName { get; set; }
+        public string? BrandName { get; set; }
+    }
 
-        public IFormFile? MainImage { get; set; } // Ảnh đại diện bắt buộc
-        public List<ProductVariantImageDto>? VariantImages { get; set; } = null;
+    public class CreateProductRequest
+    {
+        [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
+        public string Name { get; set; } = null!;
+        public string? Description { get; set; }
+        public bool IsActive { get; set; } = true;
+        public decimal BasePrice { get; set; }
+        public int CategoryId { get; set; }
+        public int BrandId { get; set; }
 
+        // Nhận file từ React gửi lên
+        public IFormFile? ThumbnailFile { get; set; }
+    }
+
+    // Nên tạo UpdateRequest riêng, phòng trường hợp sau này update khác create
+    public class UpdateProductRequest
+    {
+        [Required(ErrorMessage = "Tên sản phẩm không được để trống")]
+        public string Name { get; set; } = null!;
+        public string? Description { get; set; }
+        public bool IsActive { get; set; }
+        public decimal BasePrice { get; set; }
+        public int CategoryId { get; set; }
+        public int BrandId { get; set; }
+
+        public IFormFile? ThumbnailFile { get; set; }
     }
 
     public class ProductVariantImageDto

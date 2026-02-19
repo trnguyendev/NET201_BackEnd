@@ -16,6 +16,7 @@ namespace SportStore.Application.Services
             var productSizes = await _unitOfWork.ProductColors.GetAllAsync();
             return productSizes.Select(item => new ProductColorDto
             {
+                Id = item.Id,
                 Name = item.Name,
                 HexCode = item.HexCode,
             });

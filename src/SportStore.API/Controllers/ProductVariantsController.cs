@@ -9,44 +9,37 @@ namespace SportStore.API.Controllers
     [ApiController]
     public class ProductVariantsController : ControllerBase
     {
-        private readonly IProductVariantService _productVariantService;
-        public ProductVariantsController(IProductVariantService productVariantService)
+        private readonly IProductVariantService _variantService;
+        public ProductVariantsController(IProductVariantService variantService)
         {
-            _productVariantService = productVariantService;
+            _variantService = variantService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GelAll()
+        [HttpGet("product/{productId}")]
+        public async Task<IActionResult> GetByProductId(int productId)
         {
-            var productVariants = await _productVariantService.GetAllProductVariantsAsync();
-            return Ok(productVariants);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var productVariant = await _productVariantService.GellProductVariantByIdAsnyc(id);
-            return Ok(productVariant);
+            var variants = await _variantService.GetVariantsByProductIdAsync(productId);
+            return Ok(variants);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateProductVariantRequest request)
+        public async Task<IActionResult> Create([FromBody] CreateProductVariantRequest request) // LƯU Ý: Ở ĐÂY DÙNG [FromBody] VÌ LÀ JSON
         {
-            var brand = await _productVariantService.CreateProductVarianAsync(request);
-            return Ok(brand);
+            var variant = await _variantService.CreateVariantAsync(request);
+            return Ok(variant);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateProductVariantRequest request)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProductVariantRequest request)
         {
-            await _productVariantService.UpdateProductVarianAsync(id, request);
+            await _variantService.UpdateVariantAsync(id, request);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _productVariantService.DeleteProductVariantAsync(id);
+            await _variantService.DeleteVariantAsync(id);
             return NoContent();
         }
     }

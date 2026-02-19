@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace SportStore.Application.DTOs
 {
@@ -14,7 +15,7 @@ namespace SportStore.Application.DTOs
         [Required(ErrorMessage = "Tên thương hiệu không được bỏ trống!")]
         public required string Name { get; set; }
 
-        public string? LogoUrl { get; set; }
+        public IFormFile? LogoFile { get; set; }
     }
 
     public class UpdateBrandRequest
@@ -22,7 +23,7 @@ namespace SportStore.Application.DTOs
         [Required(ErrorMessage = "Tên thương hiệu không được bỏ trống!")]
         public required string Name { get; set; }
 
-        public string? LogoUrl { get; set; }
+        public IFormFile? LogoFile { get; set; }
 
     }
 }
