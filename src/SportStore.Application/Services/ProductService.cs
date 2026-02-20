@@ -126,10 +126,67 @@ namespace SportStore.Application.Services
             }
         }
 
-        public Task<IEnumerable<ProductHomeDto>> GetHomeProductsAsync()
+        public async Task<IEnumerable<ProductHomeDto>> GetHomeProductsAsync()
         {
-            // Tạm thời để trống hàm này (hoặc bạn có thể implement theo logic riêng sau)
-            throw new NotImplementedException();
+            // Lấy toàn bộ sản phẩm (Nếu Repo của bạn có hỗ trợ Include Category và Brand thì càng tốt)
+            var products = await _unitOfWork.Products.GetAllAsync();
+
+            // Lấy danh mục và thương hiệu để map tên (Cách thủ công nếu không dùng Include)
+            var categories = await _unitOfWork.Categories.GetAllAsync();
+            var brands = await _unitOfWork.Brands.GetAllAsync();
+
+            // CHỈ LỌC NHỮNG SẢN PHẨM ĐANG ACTIVE (IsActive == true)
+            var activeProducts = products.Where(p => p.IsActive == true);
+
+            return activeProducts.Select(p => new ProductHomeDto
+            {
+                Id = p.Id,
+                Name = p.Name,
+                BasePrice = p.BasePrice,
+                Thumbnail = p.Thumbnail,
+                CategoryName = categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name,
+                BrandName = brands.FirstOrDefault(b => b.Id == p.BrandId)?.Name
+            }).ToList();
+        }
+
+        public async Task<ProductDetailDto> GetProductDetailAsync(int id)
+        {
+            var product = await _unitOfWork.Products.GetByIdAsync(id);
+            if (product == null || !product.IsActive) return null; // Không bán hoặc ẩn thì không cho xem
+
+            var category = await _unitOfWork.Categories.GetByIdAsync(product.CategoryId);
+            var brand = await _unitOfWork.Brands.GetByIdAsync(product.BrandId);
+
+            // Lấy danh sách biến thể của sản phẩm này
+            var allVariants = await _unitOfWork.ProductVariants.GetAllAsync();
+            var variants = allVariants.Where(v => v.ProductId == id).ToList();
+
+            var colors = await _unitOfWork.ProductColors.GetAllAsync();
+            var sizes = await _unitOfWork.ProductSizes.GetAllAsync();
+
+            var variantDtos = variants.Select(v => new ProductVariantDto
+            {
+                Id = v.Id,
+                ProductId = v.ProductId,
+                ColorId = v.ColorId,
+                ColorName = colors.FirstOrDefault(c => c.Id == v.ColorId)?.Name,
+                SizeId = v.SizeId,
+                SizeName = sizes.FirstOrDefault(s => s.Id == v.SizeId)?.Name,
+                Quantity = v.Quantity,
+                SkuCode = v.SkuCode
+            }).ToList();
+
+            return new ProductDetailDto
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                BasePrice = product.BasePrice,
+                Thumbnail = product.Thumbnail,
+                CategoryName = category?.Name,
+                BrandName = brand?.Name,
+                Variants = variantDtos
+            };
         }
     }
 }

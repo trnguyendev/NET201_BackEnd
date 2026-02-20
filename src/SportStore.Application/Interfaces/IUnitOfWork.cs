@@ -11,6 +11,7 @@ namespace SportStore.Application.Interfaces
         IGenericRepository<ProductSize> ProductSizes { get; }
         IGenericRepository<ProductVariant> ProductVariants { get; }
         IGenericRepository<ProductImage> ProductImages { get; }
+       IGenericRepository<Order> Orders { get; }
         Task<int> CompleteAsync(); //Hàm gọi SaveChanges
     }
 }

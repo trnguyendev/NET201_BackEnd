@@ -9,13 +9,10 @@ namespace SportStore.Application.DTOs
     public class ProductHomeDto
     {
         public int Id { get; set; }
-
         public string Name { get; set; } = null!;
-
-        public decimal Price { get; set; }
-
+        public decimal BasePrice { get; set; }
         public string? Thumbnail { get; set; }
-
-        public bool IsInStock { get; set; }
+        public string? CategoryName { get; set; } // Hiển thị thêm tên danh mục cho đẹp
+        public string? BrandName { get; set; }
     }
 }

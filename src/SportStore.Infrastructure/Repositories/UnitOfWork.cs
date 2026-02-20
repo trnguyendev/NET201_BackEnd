@@ -13,6 +13,7 @@ namespace SportStore.Infrastructure.Repositories
         public IGenericRepository<ProductSize> ProductSizes { get; private set; }
         public IGenericRepository<ProductVariant> ProductVariants { get; private set; }
         public IGenericRepository<ProductImage> ProductImages { get; private set; }
+        public IGenericRepository<Order> Orders { get; private set; }
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
@@ -22,6 +23,7 @@ namespace SportStore.Infrastructure.Repositories
             ProductColors = new GenericRepository<ProductColor>(_context);
             ProductSizes = new GenericRepository<ProductSize>(_context);
             ProductVariants = new GenericRepository<ProductVariant>(_context);
+            Orders = new GenericRepository<Order>(_context);
         }
         public async Task<int> CompleteAsync() => await _context.SaveChangesAsync();
         public void Dispose() => _context.Dispose();

@@ -17,9 +17,8 @@ namespace SportStore.Infrastructure.Repositories
                 {
                     Id = p.Id,
                     Name = p.Name,
-                    Price = p.BasePrice,
+                    BasePrice = p.BasePrice,
                     Thumbnail = p.Thumbnail,
-                    IsInStock = p.ProductVariants.Any(v => v.Quantity > 0)
                 })
                 .ToListAsync();
         }

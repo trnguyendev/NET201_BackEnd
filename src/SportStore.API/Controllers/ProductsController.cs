@@ -50,5 +50,22 @@ namespace SportStore.API.Controllers
             await _productService.DeleteProductAsync(id);
             return NoContent();
         }
+
+        // GET: api/Products/home
+        [HttpGet("home")]
+        public async Task<IActionResult> GetHomeProducts()
+        {
+            var products = await _productService.GetHomeProductsAsync();
+            return Ok(products);
+        }
+
+        // GET: api/Products/detail/5
+        [HttpGet("detail/{id}")]
+        public async Task<IActionResult> GetDetail(int id)
+        {
+            var product = await _productService.GetProductDetailAsync(id);
+            if (product == null) return NotFound("Sản phẩm không tồn tại hoặc đã ngừng kinh doanh.");
+            return Ok(product);
+        }
     }
 }
