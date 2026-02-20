@@ -1,10 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SportStore.Application.Interfaces;
 using SportStore.Application.Services;
+using SportStore.Domain.Entities;
 using SportStore.Infrastructure;
 using SportStore.Infrastructure.Repositories;
 using SportStore.Infrastructure.Services;
-using AutoMapper;
+using System.Text;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +24,67 @@ builder.Services.AddCors(options =>
         });
 });
 
-//
+// 1. Đăng ký Identity
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+// 2. Cấu hình JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidateAudience = true,
+        ValidAudience = jwtSettings["Audience"],
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+// Cấu hình Swagger để nhận JWT Token
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "SportStore API", Version = "v1" });
+
+    // Định nghĩa loại bảo mật là Bearer Token
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Vui lòng nhập Token theo định dạng: Bearer {chuỗi_token_của_bạn}",
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey, // Sử dụng ApiKey thay vì Http để tương thích tốt hơn với format "Bearer xyz"
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+
+    // Yêu cầu Swagger gắn Token này vào mỗi request
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
 
 // Add services to the container.
 
@@ -46,7 +111,6 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
@@ -60,6 +124,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseCors("AllowReactApp");
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

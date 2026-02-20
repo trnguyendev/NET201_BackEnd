@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using SportStore.Domain.Entities;
 
 namespace SportStore.Infrastructure
 {
-    public class ApplicationDbContext: DbContext
+    public class ApplicationDbContext: IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) {}
 
@@ -16,5 +17,14 @@ namespace SportStore.Infrastructure
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            // BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ MAPPING IDENTITY TABLES
+            base.OnModelCreating(builder);
+
+            // ... Giữ nguyên các cấu hình fluent API cũ của bạn ở đây (nếu có) ...
+        }
     }
 }
