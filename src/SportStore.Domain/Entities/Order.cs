@@ -19,5 +19,7 @@
 
         // Navigation (1 đơn hàng có nhiều chi tiết)
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+
+        public string? UserId { get; set; }
     }
 }

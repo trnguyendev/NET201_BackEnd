@@ -5,7 +5,7 @@ using SportStore.Application.Interfaces;
 
 namespace SportStore.API.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -17,6 +17,7 @@ namespace SportStore.API.Controllers
             _productService = productService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -24,6 +25,7 @@ namespace SportStore.API.Controllers
             return Ok(products);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -32,6 +34,7 @@ namespace SportStore.API.Controllers
             return Ok(product);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create([FromForm] CreateProductRequest request)
         {
@@ -39,6 +42,7 @@ namespace SportStore.API.Controllers
             return Ok(product);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromForm] UpdateProductRequest request)
         {
@@ -46,6 +50,7 @@ namespace SportStore.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -53,7 +58,6 @@ namespace SportStore.API.Controllers
             return NoContent();
         }
 
-        // GET: api/Products/home
         [HttpGet("home")]
         public async Task<IActionResult> GetHomeProducts()
         {
@@ -61,7 +65,6 @@ namespace SportStore.API.Controllers
             return Ok(products);
         }
 
-        // GET: api/Products/detail/5
         [HttpGet("detail/{id}")]
         public async Task<IActionResult> GetDetail(int id)
         {
