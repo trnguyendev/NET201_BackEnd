@@ -126,27 +126,87 @@ namespace SportStore.Application.Services
             }
         }
 
-        public async Task<IEnumerable<ProductHomeDto>> GetHomeProductsAsync()
+        public async Task<PageResult<ProductHomeDto>> GetHomeProductsAsync(int pageNumber = 1, int pageSize = 20)
         {
-            // Lấy toàn bộ sản phẩm (Nếu Repo của bạn có hỗ trợ Include Category và Brand thì càng tốt)
-            var products = await _unitOfWork.Products.GetAllAsync();
+            // 1. Tạo câu truy vấn bằng GetQueryable() (Lúc này CHƯA chạy xuống DB)
+            var query = _unitOfWork.Products.GetQueryable().Where(p => p.IsActive == true);
 
-            // Lấy danh mục và thương hiệu để map tên (Cách thủ công nếu không dùng Include)
+            // 2. Đếm tổng số lượng (Database chỉ chạy lệnh COUNT(*) cực kỳ nhẹ)
+            int totalCount = query.Count();
+            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            // 3. Thực hiện phân trang (Lệnh Skip & Take sẽ được dịch thành OFFSET FETCH trong SQL)
+            // Gọi .ToList() thì Database mới bắt đầu nhả ra ĐÚNG 20 dòng sản phẩm!
+            var pagedProducts = query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // 4. Lấy danh mục và thương hiệu (Vì bảng này thường ít dữ liệu nên GetAll tạm thời vẫn chấp nhận được)
             var categories = await _unitOfWork.Categories.GetAllAsync();
             var brands = await _unitOfWork.Brands.GetAllAsync();
 
-            // CHỈ LỌC NHỮNG SẢN PHẨM ĐANG ACTIVE (IsActive == true)
-            var activeProducts = products.Where(p => p.IsActive == true);
-
-            return activeProducts.Select(p => new ProductHomeDto
+            // 5. Map dữ liệu
+            var items = pagedProducts.Select(p => new ProductHomeDto
             {
                 Id = p.Id,
                 Name = p.Name,
                 BasePrice = p.BasePrice,
                 Thumbnail = p.Thumbnail,
                 CategoryName = categories.FirstOrDefault(c => c.Id == p.CategoryId)?.Name,
-                BrandName = brands.FirstOrDefault(b => b.Id == p.BrandId)?.Name
-            }).ToList();
+                BrandName = brands.FirstOrDefault(b => b.Id == p.BrandId)?.Name,
+                BrandImg = brands.FirstOrDefault(b => b.Id == p.BrandId)?.LogoUrl,
+            });
+
+            // 6. Trả về gói dữ liệu phân trang
+            return new PageResult<ProductHomeDto>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                CurrentPage = pageNumber,
+                PageSize = pageSize
+            };
+        }
+
+        public async Task<PageResult<ProductHomeDto>> GetProductsByCategoryIdAsync(int categoryId, int pageNumber = 1, int pageSize = 20)
+        {
+            // 1. Tạo câu truy vấn (Lúc này CHƯA chạy xuống DB)
+            // Giả sử IRepository của bạn có hàm GetQueryable() trả về IQueryable<Product>
+            var query = _unitOfWork.Products.GetQueryable()
+                            .Where(p => p.CategoryId == categoryId && p.IsActive == true);
+
+            // 2. Đếm tổng số lượng (Chỉ chạy câu lệnh COUNT(*) dưới DB, cực kỳ nhẹ)
+            int totalCount = query.Count();
+            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+
+            // 3. Phân trang và JOIN dữ liệu trực tiếp dưới Database
+            // Entity Framework sẽ tự động dịch đoạn này thành câu lệnh SQL SELECT + JOIN + OFFSET FETCH
+            var pagedProducts = query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(p => new ProductHomeDto
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    BasePrice = p.BasePrice,
+                    Thumbnail = p.Thumbnail,
+                    // Nếu bạn đã setup Navigation Properties (Khóa ngoại) trong Entity, bạn lấy trực tiếp thế này:
+                    CategoryName = p.Category.Name,
+                    BrandName = p.Brand.Name,
+                    BrandImg = p.Brand.LogoUrl
+                })
+                .ToList(); // Gọi ToList() lúc này DB mới thực thi và CHỈ trả về đúng 20 dòng!
+
+            // 4. Trả về kết quả
+            return new PageResult<ProductHomeDto>
+            {
+                Items = pagedProducts,
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                CurrentPage = pageNumber,
+                PageSize = pageSize
+            };
         }
 
         public async Task<ProductDetailDto> GetProductDetailAsync(int id)

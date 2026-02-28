@@ -59,9 +59,9 @@ namespace SportStore.API.Controllers
         }
 
         [HttpGet("home")]
-        public async Task<IActionResult> GetHomeProducts()
+        public async Task<IActionResult> GetHomeProducts([FromQuery] int page = 1, [FromQuery] int limit = 20)
         {
-            var products = await _productService.GetHomeProductsAsync();
+            var products = await _productService.GetHomeProductsAsync(page, limit);
             return Ok(products);
         }
 
@@ -71,6 +71,14 @@ namespace SportStore.API.Controllers
             var product = await _productService.GetProductDetailAsync(id);
             if (product == null) return NotFound("Sản phẩm không tồn tại hoặc đã ngừng kinh doanh.");
             return Ok(product);
+        }
+
+        [HttpGet("category/{categoryId}")]
+        public async Task<IActionResult> GetProductsByCategory(int categoryId, [FromQuery] int page = 1, [FromQuery] int limit = 20)
+        {
+            var products = await _productService.GetProductsByCategoryIdAsync(categoryId, page, limit);
+            if (products == null) return NotFound("Không có sản phẩm nào thuộc loại này.");
+            return Ok(products);
         }
     }
 }

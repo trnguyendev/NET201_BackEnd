@@ -12,7 +12,8 @@ namespace SportStore.Application.DTOs
         public string Name { get; set; } = null!;
         public decimal BasePrice { get; set; }
         public string? Thumbnail { get; set; }
-        public string? CategoryName { get; set; } // Hiển thị thêm tên danh mục cho đẹp
+        public string? CategoryName { get; set; }
         public string? BrandName { get; set; }
+        public string? BrandImg { get; set; }
     }
 }

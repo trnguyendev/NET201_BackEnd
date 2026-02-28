@@ -9,7 +9,8 @@ namespace SportStore.Application.Interfaces
         Task<ProductDto> CreateProductAsync(CreateProductRequest request);
         Task UpdateProductAsync(int id, UpdateProductRequest request);
         Task DeleteProductAsync(int id);
-        Task<IEnumerable<ProductHomeDto>> GetHomeProductsAsync();
+        Task<PageResult<ProductHomeDto>> GetHomeProductsAsync(int pageNumber, int pageSize);
+        Task<PageResult<ProductHomeDto>> GetProductsByCategoryIdAsync(int categoryId, int pageNumber, int pageSize);
         Task<ProductDetailDto> GetProductDetailAsync(int id);
 
     }
