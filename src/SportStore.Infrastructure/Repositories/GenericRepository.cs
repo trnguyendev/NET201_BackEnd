@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SportStore.Application.DTOs;
 using SportStore.Application.Interfaces;
 using System.Runtime.CompilerServices;
 
@@ -19,10 +20,19 @@ namespace SportStore.Infrastructure.Repositories
         public void Delete(T entity) => _context.Set<T>().Remove(entity);
         public IQueryable<T> GetQueryable()
         {
-            // Hàm này cho phép trả về bộ khung IQueryable 
-            // để tầng Service có thể .Where(), .Skip(), .Take() thoải mái
-            // trước khi thực sự biến thành câu lệnh SQL chạy xuống DB.
             return _context.Set<T>().AsQueryable();
+        }
+
+        public async Task<PageResult<T>> GetPagedAsync(IQueryable<T> query, int pageNumber, int pageSize)
+        {
+            var count = await query.CountAsync();
+
+            var items = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PageResult<T>(items, count, pageNumber, pageSize);
         }
     } 
 }

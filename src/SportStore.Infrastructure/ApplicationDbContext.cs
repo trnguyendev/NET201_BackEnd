@@ -24,7 +24,6 @@ namespace SportStore.Infrastructure
             // BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ MAPPING IDENTITY TABLES
             base.OnModelCreating(builder);
 
-            // ... Giữ nguyên các cấu hình fluent API cũ của bạn ở đây (nếu có) ...
         }
     }
 }

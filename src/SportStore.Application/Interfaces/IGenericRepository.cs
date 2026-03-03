@@ -1,4 +1,6 @@
-﻿namespace SportStore.Application.Interfaces
+﻿using SportStore.Application.DTOs;
+
+namespace SportStore.Application.Interfaces
 {
     public interface IGenericRepository<T> where T : class
     {
@@ -8,5 +10,6 @@
         void Update(T entity);
         void Delete(T entity);
         IQueryable<T> GetQueryable();
+        Task<PageResult<T>> GetPagedAsync(IQueryable<T> query, int pageNumber, int pageSize);
     }
 }
