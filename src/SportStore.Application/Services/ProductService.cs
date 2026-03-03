@@ -15,12 +15,12 @@ namespace SportStore.Application.Services
             _fileService = fileService;
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
+        public async Task<PageResult<ProductDto>> GetAllProductsAsync(int pageNumber = 1, int pageSize = 20)
         {
-            var products = await _unitOfWork.Products.GetAllAsync();
-
-            // Tạm thời map thủ công, nếu bạn xài AutoMapper thì càng ngắn gọn
-            return products.Select(p => new ProductDto
+            var query = _unitOfWork.Products.GetQueryable()
+                       .OrderByDescending(p => p.Id);
+            var pagedData = await _unitOfWork.Products.GetPagedAsync(query, pageNumber, pageSize);
+            var productDtos = pagedData.Items.Select(p => new ProductDto
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -30,7 +30,14 @@ namespace SportStore.Application.Services
                 Thumbnail = p.Thumbnail,
                 CategoryId = p.CategoryId,
                 BrandId = p.BrandId
-            });
+            }).ToList();
+
+            return new PageResult<ProductDto>(
+                productDtos,
+                pagedData.TotalCount,
+                pageNumber,
+                pageSize
+            );
         }
 
         public async Task<ProductDto> GetProductByIdAsync(int id)

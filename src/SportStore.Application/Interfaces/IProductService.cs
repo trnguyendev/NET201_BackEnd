@@ -4,7 +4,7 @@ namespace SportStore.Application.Interfaces
 {
     public interface IProductService
     {
-        Task<IEnumerable<ProductDto>> GetAllProductsAsync();
+        Task<PageResult<ProductDto>> GetAllProductsAsync(int pageNumber = 1, int pageSize = 20);
         Task<ProductDto> GetProductByIdAsync(int id);
         Task<ProductDto> CreateProductAsync(CreateProductRequest request);
         Task UpdateProductAsync(int id, UpdateProductRequest request);

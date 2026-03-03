@@ -19,9 +19,9 @@ namespace SportStore.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int limit = 20)
         {
-            var products = await _productService.GetAllProductsAsync();
+            var products = await _productService.GetAllProductsAsync(page, limit);
             return Ok(products);
         }
 
