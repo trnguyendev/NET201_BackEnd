@@ -18,7 +18,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173") // Chỉ cho phép đúng React của bạn
+            policy.WithOrigins("http://localhost:5173")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -109,6 +109,7 @@ builder.Services.AddScoped<IProductVariantService, ProductVariantService>();
 builder.Services.AddScoped<IFileService, LocalFileService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
