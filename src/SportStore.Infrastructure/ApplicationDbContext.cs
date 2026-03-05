@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using SportStore.Domain.Entities;
+using System.Reflection.Emit;
 
 namespace SportStore.Infrastructure
 {
@@ -19,11 +20,16 @@ namespace SportStore.Infrastructure
         public DbSet<OrderDetail> OrderDetails { get; set; }
 
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ MAPPING IDENTITY TABLES
-            base.OnModelCreating(builder);
+            base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<ProductSize>()
+                .HasOne(ps => ps.Category)
+                .WithMany(c => c.Sizes)
+                .HasForeignKey(ps => ps.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

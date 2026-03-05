@@ -1,4 +1,5 @@
-﻿using SportStore.Application.DTOs;
+﻿using Microsoft.EntityFrameworkCore; // 👉 Bắt buộc thêm dòng này để xài được lệnh .Include()
+using SportStore.Application.DTOs;
 using SportStore.Application.Interfaces;
 using SportStore.Domain.Entities;
 
@@ -7,6 +8,7 @@ namespace SportStore.Application.Services
     public class ProductSizeService : IProductSizeService
     {
         private readonly IUnitOfWork _unitOfWork;
+
         public ProductSizeService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -14,20 +16,38 @@ namespace SportStore.Application.Services
 
         public async Task<IEnumerable<ProductSizeDto>> GetAllProductSizesAsync()
         {
-            var productSizes = await _unitOfWork.ProductSizes.GetAllAsync();
+            // 👉 Dùng GetQueryable và Include để JOIN bảng Category
+            var productSizes = await _unitOfWork.ProductSizes.GetQueryable()
+                                        .Include(ps => ps.Category)
+                                        .OrderBy(ps => ps.CategoryId) // Xếp theo danh mục
+                                        .ThenBy(ps => ps.Name)        // Rồi xếp theo tên Size
+                                        .ToListAsync();
+
             return productSizes.Select(item => new ProductSizeDto
             {
                 Id = item.Id,
                 Name = item.Name,
-                Type = item.Type,
+                CategoryId = item.CategoryId,
+                CategoryName = item.Category?.Name // 👉 Lấy tên danh mục ra
             });
         }
 
         public async Task<ProductSizeDto> GetProductByIdAsync(int id)
         {
-            var productSize = await _unitOfWork.ProductSizes.GetByIdAsync(id);
+            // Tương tự, dùng GetQueryable để lấy cả tên Category
+            var productSize = await _unitOfWork.ProductSizes.GetQueryable()
+                                        .Include(ps => ps.Category)
+                                        .FirstOrDefaultAsync(ps => ps.Id == id);
+
             if (productSize == null) return null;
-            return new ProductSizeDto { Name = productSize.Name, Type = productSize.Type };
+
+            return new ProductSizeDto
+            {
+                Id = productSize.Id,
+                Name = productSize.Name,
+                CategoryId = productSize.CategoryId,
+                CategoryName = productSize.Category?.Name
+            };
         }
 
         public async Task<ProductSizeDto> CreateProductSizeAsync(CreateProductSizeRequest request)
@@ -35,31 +55,37 @@ namespace SportStore.Application.Services
             var productSize = new ProductSize
             {
                 Name = request.Name,
-                Type = request.Type,
+                CategoryId = request.CategoryId // 👉 Đổi Type thành CategoryId
             };
+
             await _unitOfWork.ProductSizes.AddAsync(productSize);
             await _unitOfWork.CompleteAsync();
-            return new ProductSizeDto { Name = request.Name, Type = request.Type };
+
+            return new ProductSizeDto
+            {
+                Id = productSize.Id,
+                Name = productSize.Name,
+                CategoryId = productSize.CategoryId
+            };
         }
 
         public async Task UpdateProductSizeAsync(int id, UpdateProductSizeRequest request)
         {
-            var productSzie = await _unitOfWork.ProductSizes.GetByIdAsync(id);
-            if (productSzie != null)
+            var productSize = await _unitOfWork.ProductSizes.GetByIdAsync(id);
+            if (productSize != null)
             {
-                productSzie.Name = request.Name;
-                productSzie.Type = request.Type;
+                productSize.Name = request.Name;
+                productSize.CategoryId = request.CategoryId;
 
-                _unitOfWork.ProductSizes.Update(productSzie);
+                _unitOfWork.ProductSizes.Update(productSize);
                 await _unitOfWork.CompleteAsync();
             }
-            ;
         }
 
         public async Task DeleteProductSizeAsync(int id)
         {
             var productSize = await _unitOfWork.ProductSizes.GetByIdAsync(id);
-            if(productSize != null)
+            if (productSize != null)
             {
                 _unitOfWork.ProductSizes.Delete(productSize);
                 await _unitOfWork.CompleteAsync();

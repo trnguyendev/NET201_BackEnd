@@ -12,8 +12,8 @@ using SportStore.Infrastructure;
 namespace SportStore.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260220055438_cc")]
-    partial class cc
+    [Migration("20260305021433_UpdateProductSizeRelation")]
+    partial class UpdateProductSizeRelation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -181,6 +181,9 @@ namespace SportStore.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -299,6 +302,9 @@ namespace SportStore.Infrastructure.Migrations
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -435,14 +441,16 @@ namespace SportStore.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.ToTable("ProductSizes");
                 });
@@ -579,6 +587,17 @@ namespace SportStore.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
+            modelBuilder.Entity("SportStore.Domain.Entities.ProductSize", b =>
+                {
+                    b.HasOne("SportStore.Domain.Entities.Category", "Category")
+                        .WithMany("Sizes")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("SportStore.Domain.Entities.ProductVariant", b =>
                 {
                     b.HasOne("SportStore.Domain.Entities.ProductColor", "Color")
@@ -604,6 +623,11 @@ namespace SportStore.Infrastructure.Migrations
                     b.Navigation("Product");
 
                     b.Navigation("Size");
+                });
+
+            modelBuilder.Entity("SportStore.Domain.Entities.Category", b =>
+                {
+                    b.Navigation("Sizes");
                 });
 
             modelBuilder.Entity("SportStore.Domain.Entities.Order", b =>

@@ -6,7 +6,8 @@ namespace SportStore.Application.DTOs
     {
         public int Id { get; set; }
         public required string Name { get; set; }
-        public string? Type { get; set; }
+        public int CategoryId { get; set; }
+        public string? CategoryName { get; set; }
     }
 
     public class CreateProductSizeRequest
@@ -16,6 +17,8 @@ namespace SportStore.Application.DTOs
         public required string Name { get; set; }
 
         public string? Type { get; set; }
+        public int CategoryId { get; set; }
+        public string? CategoryName { get; set; }
     }
 
     public class UpdateProductSizeRequest
@@ -24,6 +27,7 @@ namespace SportStore.Application.DTOs
         [MaxLength(10, ErrorMessage = "Tên size quá dài!")]
         public required string Name { get; set; }
 
-        public string? Type { get; set; }
+        public int CategoryId { get; set; }
+        public string? CategoryName { get; set; }
     }
 }

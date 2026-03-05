@@ -12,8 +12,8 @@ using SportStore.Infrastructure;
 namespace SportStore.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260223091613_AddUserIdToOrder")]
-    partial class AddUserIdToOrder
+    [Migration("20260304171442_createDataBase")]
+    partial class createDataBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -180,6 +180,9 @@ namespace SportStore.Infrastructure.Migrations
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
